@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gaia One — Dashboard Live</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f0f0ee;color:#1a1a18;font-size:13px}
+.w{max-width:1200px;margin:0 auto;padding:14px}
+.top{background:#fff;border:1px solid #e0e0de;border-radius:12px;padding:11px 16px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.top h1{font-size:15px;font-weight:700}.top small{font-size:11px;color:#888;display:block}
+.bd{display:inline-flex;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;white-space:nowrap}
+.b-bl{background:#dbeeff;color:#1255a4}.b-gr{background:#dcf3e3;color:#1a6b38}
+.b-am{background:#fff3d6;color:#854f0b}.b-re{background:#fde8e8;color:#a32d2d}
+.selrow{display:flex;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+.sg{background:#fff;border:1px solid #e0e0de;border-radius:10px;padding:7px 12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sl{font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.sb{font-size:11px;padding:4px 12px;border-radius:14px;border:1.5px solid #ddd;background:#f8f8f6;color:#555;cursor:pointer;font-family:inherit;transition:all .15s}
+.sb:hover{border-color:#3266ad;color:#3266ad}.sb.on{background:#1a1a18;border-color:#1a1a18;color:#fff;font-weight:700}
+.ctx{background:linear-gradient(135deg,#1a1a18,#3a3a38);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ctx h2{font-size:14px;font-weight:700}.ctx small{font-size:11px;opacity:.7}
+.kgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:9px}
+.kcard{background:#fff;border:1.5px solid #e0e0de;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;position:relative;user-select:none}
+.kcard:hover{border-color:#3266ad;box-shadow:0 2px 8px rgba(50,102,173,.12)}
+.kcard.active{border-color:#1a1a18;box-shadow:0 3px 12px rgba(0,0,0,.15)}
+.kcard.active::after{content:"u25BC";position:absolute;bottom:6px;right:10px;font-size:10px;color:#1a1a18;opacity:.5}
+.kcard.k-grn{border-color:#1a6b38}.kcard.k-am{border-color:#D85A30}.kcard.k-bl{border-color:#3266ad}.kcard.k-re{border-color:#E24B4A}
+.kcard.active.k-grn{background:#f0faf4}.kcard.active.k-am{background:#fff8f0}.kcard.active.k-bl{background:#f0f6ff}.kcard.active.k-re{background:#fff0f0}
+.kl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.kv{font-size:22px;font-weight:700;line-height:1.1}.ks{font-size:10px;color:#888;margin-top:3px;line-height:1.3}
+.red{color:#a32d2d}.grn{color:#1a6b38}.amb{color:#854f0b}.blu{color:#1255a4}
+.dpanel{background:#fff;border:2px solid #1a1a18;border-radius:12px;padding:16px;margin-bottom:9px;animation:sd .2s ease}
+@keyframes sd{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dt{font-size:14px;font-weight:700}
+.dx{font-size:18px;cursor:pointer;color:#888;padding:2px 6px;border-radius:4px}.dx:hover{background:#f0f0ee;color:#1a1a18}
+.card{background:#fff;border:1px solid #e0e0de;border-radius:10px;padding:12px 14px;margin-bottom:9px}
+.ct{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:5px 8px;color:#888;font-weight:700;border-bottom:1px solid #ebebea;font-size:10px;text-transform:uppercase;background:#fafaf8;white-space:nowrap}
+.tbl td{padding:5px 8px;border-bottom:1px solid #f2f2f0;vertical-align:middle}
+.tbl tr:last-child td{border:none}.tbl tr:hover td{background:#fafaf8}
+.rnk{color:#bbb;font-size:11px;width:18px;font-weight:700}
+.statrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f2f2f0;font-size:12px}
+.statrow:last-child{border:none}.statk{color:#888}.statv{font-weight:700}
+.info{padding:8px 12px;border-radius:8px;font-size:11px;line-height:1.5;margin-bottom:9px}
+.ired{background:#fde8e8;border:1px solid #f5c0c0;color:#a32d2d}
+.iamb{background:#fff3d6;border:1px solid #f5d980;color:#854f0b}
+.ibl{background:#dbeeff;border:1px solid #b3d4f5;color:#1255a4}
+.igrn{background:#dcf3e3;border:1px solid #a8ddb5;color:#1a6b38}
+.bbg{height:6px;background:#f0f0ee;border-radius:3px;overflow:hidden;margin-top:2px}
+.bbf{height:100%;border-radius:3px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.calh{font-size:9px;font-weight:700;color:#aaa;text-align:center;padding:3px 0}
+.cald{border-radius:6px;padding:4px 2px;text-align:center;background:#f8f8f6;border:1px solid #f0f0ee;min-height:44px}
+.caln{font-size:9px;color:#bbb;margin-bottom:2px}.caldot{font-size:10px;font-weight:700}
+@media(max-width:900px){.kgrid{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:600px){.kgrid{grid-template-columns:1fr 1fr}}
+</style>
+<style>
+#loading-overlay {
+  display:flex;position:fixed;inset:0;background:rgba(10,15,25,0.92);
+  z-index:9999;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;font-family:inherit;
+}
+#loading-overlay .spinner {
+  width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);
+  border-top-color:#4A90D9;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading-msg{font-size:14px;color:#aaa;margin-top:8px;}
+#last-updated{font-size:11px;color:#4A90D9;padding:4px 10px;background:#1a2236;border-radius:4px;margin-left:12px;}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="top">
+  <div><h1>Gaia One &mdash; Dashboard</h1><small id="sub-lbl">Jun/26 &middot; Digital Manager Guru</small></div>
+  <div style="display:flex;gap:5px;flex-wrap:wrap" id="top-badges"></div>
+</div>
+<div class="selrow">
+  <div class="sg">
+    <span class="sl">Per&iacute;odo</span>
+    <button class="sb on" data-type="m" data-val="all">Todos</button>
+    <button class="sb" data-type="m" data-val="2026-02">Fev/26</button>
+    <button class="sb" data-type="m" data-val="2026-03">Mar/26</button>
+    <button class="sb" data-type="m" data-val="2026-04">Abr/26 &#127942;</button>
+    <button class="sb" data-type="m" data-val="2026-05">Mai/26</button>
+    <button class="sb" data-type="m" data-val="2026-06">Jun/26*</button>
+  </div>
+  <div class="sg">
+    <span class="sl">Objetivo</span>
+    <button class="sb on" data-type="o" data-val="painel">Painel</button>
+    <button class="sb" data-type="o" data-val="subs">Assinaturas</button>
+    <button class="sb" data-type="o" data-val="trials">Trials</button>
+    <button class="sb" data-type="o" data-val="churn">Churn</button>
+    <button class="sb" data-type="o" data-val="financeiro">&#128176; Receita</button>
+    <button class="sb" data-type="o" data-val="canais">&#128225; Canais</button>
+    <button class="sb" data-type="o" data-val="conversao">&#128260; Conversão</button>
+  <span id="last-updated">Carregando...</span></div>
+</div>
+<div class="ctx">
+  <div><h2 id="ctx-h2">Painel &mdash; Hist&oacute;rico</h2><small id="ctx-sub">Fev &rarr; Jun 2026 &middot; todos os dados</small></div>
+  <div id="ctx-meta" style="font-size:12px;opacity:.8"></div>
+</div>
+<div class="kgrid" id="kpi-grid"></div>
+<div id="drill-panel" style="display:none"></div>
+<div id="main-content"></div>
+</div>
+
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div style="font-size:18px;font-weight:700;letter-spacing:1px;">GAIA ONE</div>
+  <div style="font-size:13px;color:#aaa;margin-top:4px;">Carregando dados ao vivo...</div>
+  <div id="loading-msg">Conectando...</div>
+</div>
+
+<script>
+
+/* ═══════════════════════════════════════════════════════
+   GAIA ONE — LIVE DASHBOARD
+   Fonte: Supabase (guru_subscriptions) — tempo real
+   Auto-refresh: 5 minutos
+═══════════════════════════════════════════════════════ */
+
+const SB_URL = "https://txifgjgvggphdjtijffg.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4aWZnamd2Z2dwaGRqdGlqZmZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NjgzNjUsImV4cCI6MjA5NjU0NDM2NX0.PhIbnnv0HY6lWWc-FM4eTpmHdYJMRWFtOFizAa3E7wY";
+const MONTHS = ["2026-02","2026-03","2026-04","2026-05","2026-06"];
+const PAGE_SIZE = 1000;
+
+/* ── FETCHING ── */
+async function fetchAllSubs() {
+  const cols = "last_status,charged_times,charged_every_days,trial_started_at,trial_finished_at,date_started_at,product_offer_name,next_cycle_value,cancel_reason";
+  const base = `${SB_URL}/rest/v1/guru_subscriptions?select=${cols}&apikey=${SB_KEY}&order=row_id.asc&limit=${PAGE_SIZE}`;
+  let all = [], offset = 0, keepGoing = true;
+  while (keepGoing) {
+    const res = await fetch(`${base}&offset=${offset}`);
+    if (!res.ok) throw new Error("HTTP " + res.status + " ao buscar dados");
+    const batch = await res.json();
+    if (!Array.isArray(batch) || batch.length === 0) break;
+    all = all.concat(batch);
+    updateLoading("Carregando... " + all.length + " registros");
+    if (batch.length < PAGE_SIZE) keepGoing = false;
+    else offset += batch.length;
+  }
+  return all;
+}
+
+/* ── NORMALIZAÇÃO ── */
+function getCanal(offerName) {
+  if (!offerName) return "Gaia One";
+  const u = offerName.toUpperCase();
+  if (u.includes("PROTAGON"))     return "Protagon";
+  if (u.includes("WORKSHOP"))     return "Workshop";
+  if (u.includes("SPRINT"))       return "Sprint Digital";
+  if (u.includes("5 LIBERDADES") || u.includes("5LIB") || u.includes("5 LIB")) return "5 Liberdades";
+  if (u.includes("ALUNO"))        return "Alunos";
+  if (u.includes("UPSELL"))       return "Upsell";
+  return "Gaia One";
+}
+
+function getProduto(offerName, plano) {
+  if (!offerName) return plano === "Anual" ? "Anual" : "Base";
+  const u = offerName.toUpperCase();
+  const canal = getCanal(offerName);
+  if (canal === "Gaia One") return plano === "Anual" ? "Anual" : "Base";
+  return plano + " - " + canal;
+}
+
+function normSub(r) {
+  const plano = r.charged_every_days === 365 ? "Anual" : "Mensal";
+  const cobr  = parseInt(r.charged_times) || 0;
+  const val   = parseFloat(r.next_cycle_value) || 0;
+  const mesIni  = r.date_started_at  ? r.date_started_at.substring(0,7)  : null;
+  const mesTrial= r.trial_started_at ? r.trial_started_at.substring(0,7) : null;
+  const canal   = getCanal(r.product_offer_name);
+  const produto = getProduto(r.product_offer_name, plano);
+  return { ...r, plano, cobr, val, mesIni, mesTrial, canal, produto, temTrial: !!r.trial_started_at };
+}
+
+/* ── PROCESSAMENTO ── */
+function processData(rawSubs) {
+  const subs = rawSubs.map(normSub);
+
+  const ativas   = subs.filter(r => r.last_status === "active");
+  const trials   = subs.filter(r => r.last_status === "trial");
+  const cancels  = subs.filter(r => r.last_status === "canceled");
+  const inativas = subs.filter(r => r.last_status === "inactive");
+
+  const mens  = ativas.filter(r => r.plano === "Mensal");
+  const anual = ativas.filter(r => r.plano === "Anual");
+
+  const mrr_men   = mens.reduce((a,r)  => a + r.val, 0);
+  const mrr_cobr2 = mens.filter(r => r.cobr >= 2).reduce((a,r) => a + r.val, 0);
+  const arr_cont  = anual.reduce((a,r) => a + r.val, 0);
+  const arr_real  = mrr_men * 12 + arr_cont;
+
+  // Churn real: canceled + cobr >= 2
+  const churnReal = cancels.filter(r => r.cobr >= 2);
+  const churnRate = churnReal.length > 0
+    ? Math.round(churnReal.length / (churnReal.length + ativas.length) * 1000) / 10
+    : 0;
+
+  // Conversão: ativas que tiveram trial
+  const ativasComTrial = ativas.filter(r => r.temTrial);
+
+  // ── BY MONTH ──
+  const by_month = {};
+  const evolution = [];
+
+  MONTHS.forEach(m => {
+    const eom       = ativas.filter(r => r.mesIni && r.mesIni <= m).length;
+    const tri_m     = trials.filter(r => r.mesTrial === m);
+    const conv_m    = ativasComTrial.filter(r => r.mesIni === m);
+    const churn_m   = churnReal.filter(r => r.mesIni === m);
+    const novas_m   = ativas.filter(r => r.mesIni === m && !r.temTrial);
+    const anu_m     = ativas.filter(r => r.mesIni === m && r.plano === "Anual");
+
+    // Renovações: ativas cobr>=2 que começaram neste mês (proxy)
+    const renov_m   = ativas.filter(r => r.mesIni === m && r.cobr >= 2);
+
+    // Trial expiry do mês
+    const texp_map = {};
+    tri_m.forEach(r => {
+      if (r.trial_finished_at) {
+        const d = r.trial_finished_at.substring(0,10);
+        if (!texp_map[d]) texp_map[d] = {};
+        texp_map[d][r.produto] = (texp_map[d][r.produto] || 0) + 1;
+      }
+    });
+    const trial_expiry = Object.entries(texp_map).sort((a,b) => a[0]>b[0]?1:-1).map(([d,v]) => ({
+      data: d, total: Object.values(v).reduce((a,b)=>a+b,0),
+      est: Math.max(1, Math.round(Object.values(v).reduce((a,b)=>a+b,0) * 0.40)),
+      por_produto: Object.entries(v).sort((a,b)=>b[1]-a[1]).map(([p,q])=>({produto:p,qtd:q}))
+    }));
+
+    const trial_rank = Object.entries(
+      tri_m.reduce((acc,r) => { const k=r.produto+"||"+r.plano; acc[k]=(acc[k]||0)+1; return acc; },{})
+    ).sort((a,b)=>b[1]-a[1]).map(([k,t])=>{const[produto,plano]=k.split("||");return{produto,plano,trials:t};});
+
+    by_month[m] = {
+      eom, trials: tri_m.length, churn: churn_m.length,
+      novas: novas_m.length, men: novas_m.length,
+      anu: anu_m.length, renov: renov_m.length,
+      // Receita: não disponível sem tabela de vendas
+      receita: 0, mrr: 0,
+      rec_nova_men: 0, rec_nova_anu: 0,
+      meta: null, meta_pct: null,
+      trial_expiry, trial_rank,
+      by_product: [], churn_rank: [], churn_detail: [],
+      daily: [], daily_trials: [], calendar: [],
+      has_trials: tri_m.length > 0,
+      utm: { por_canal: [], total: 0, com_utm: 0, sem_utm: 0, pct_utm: 0 }
+    };
+    evolution.push({ mes: m, eom, trials: tri_m.length, churn: churn_m.length,
+      novas: novas_m.length, men: novas_m.length, anu: anu_m.length,
+      renov: renov_m.length, receita: 0, mrr: 0 });
+  });
+
+  // ── ACTIVE NOW by product ──
+  const prod_active = {};
+  ativas.forEach(r => {
+    const k = r.produto;
+    if (!prod_active[k]) prod_active[k] = {subs:0,mrr:0,ticket_sum:0,plano:r.plano,cobr2:0};
+    prod_active[k].subs++;
+    if (r.plano==="Mensal") prod_active[k].mrr = (prod_active[k].mrr||0) + r.val;
+    prod_active[k].ticket_sum += r.val;
+    if (r.cobr >= 2) prod_active[k].cobr2++;
+  });
+  const ap_list = Object.entries(prod_active).sort((a,b)=>b[1].subs-a[1].subs).map(([k,v]) => ({
+    produto:k, pnorm:k, plano:v.plano, subs:v.subs, mrr:Math.round(v.mrr*100)/100,
+    cobr2:v.cobr2, ticket: v.subs > 0 ? Math.round(v.ticket_sum/v.subs*100)/100 : 0,
+    pct_mrr: mrr_men > 0 ? Math.round(v.mrr/mrr_men*1000)/10 : 0
+  }));
+
+  // ── TRIAL by product ──
+  const trial_prod = {};
+  trials.forEach(r => {
+    const k = r.produto;
+    if (!trial_prod[k]) trial_prod[k] = {trials:0,plano:r.plano};
+    trial_prod[k].trials++;
+  });
+  const tp_list = Object.entries(trial_prod).sort((a,b)=>b[1].trials-a[1].trials).map(([k,v]) => {
+    const act = (prod_active[k]||{}).subs || 0;
+    return { produto:k, pnorm:k, plano:v.plano, trials:v.trials,
+      conv_rate: (v.trials+act)>0 ? Math.round(act/(v.trials+act)*1000)/10 : 0 };
+  });
+
+  // ── CHURN GLOBAL by product ──
+  const churn_by_prod = {};
+  churnReal.forEach(r => {
+    const k = r.produto+"||"+r.plano;
+    if (!churn_by_prod[k]) churn_by_prod[k] = {produto:r.produto,plano:r.plano,churn:0};
+    churn_by_prod[k].churn++;
+  });
+  const churn_global = Object.values(churn_by_prod).sort((a,b)=>b.churn-a.churn).map(v => {
+    const act = (prod_active[v.produto]||{}).subs || 0;
+    const tot = act + v.churn;
+    return { produto_curto:v.produto, produto:v.produto, plano:v.plano,
+      ativas:act, churn:v.churn, total_ever:tot,
+      churn_rate: tot>0 ? Math.round(v.churn/tot*1000)/10 : 0 };
+  });
+
+  // ── CONVERSÃO por produto ──
+  const conv_all = {};
+  [...ativasComTrial, ...trials].forEach(r => {
+    const k = r.produto+"||"+r.plano;
+    if (!conv_all[k]) conv_all[k] = {produto:r.produto,plano:r.plano,conv:0,trial:0};
+    if (r.last_status==="active") conv_all[k].conv++;
+    else conv_all[k].trial++;
+  });
+  const conv_por_produto = Object.values(conv_all).sort((a,b)=>(b.conv+b.trial)-(a.conv+a.trial)).map(v => {
+    const total = v.conv + v.trial;
+    return { produto:v.produto, plano:v.plano, total, conv:v.conv, ativa:v.conv,
+      trial:v.trial, atrasada:0, nunca_pagou:0, pagou_1x:0, ciclo_fechado:total,
+      conv_rate: total>0 ? Math.round(v.conv/total*1000)/10 : 0 };
+  });
+
+  // ── CONV mês a mês ──
+  const conv_por_mes = MONTHS.map(m => {
+    const tri_m  = trials.filter(r => r.mesTrial === m);
+    const conv_m = ativasComTrial.filter(r => r.mesIni === m);
+    const prod_map = {};
+    tri_m.forEach(r  => { if(!prod_map[r.produto]) prod_map[r.produto]={produto:r.produto,plano:r.plano,trial_ativo:0,converteu:0}; prod_map[r.produto].trial_ativo++; });
+    conv_m.forEach(r => { if(!prod_map[r.produto]) prod_map[r.produto]={produto:r.produto,plano:r.plano,trial_ativo:0,converteu:0}; prod_map[r.produto].converteu++; });
+    const por_produto = Object.values(prod_map).sort((a,b)=>(b.trial_ativo+b.converteu)-(a.trial_ativo+a.converteu)).map(v => {
+      const total = v.trial_ativo + v.converteu;
+      return {...v, total_cohort:total, conv_rate: total>0?Math.round(v.converteu/total*1000)/10:0};
+    });
+    return { mes:m, total_trial_ativo:tri_m.length, total_converteu:conv_m.length, por_produto };
+  });
+
+  // ── UTM (via canal derivado do produto) ──
+  const canal_map = {};
+  ativas.forEach(r => {
+    if (!canal_map[r.canal]) canal_map[r.canal] = {canal:r.canal,canal_grupo:r.canal,vendas:0,receita:0};
+    canal_map[r.canal].vendas++;
+  });
+  const utm_global = {
+    por_canal: Object.values(canal_map).sort((a,b)=>b.vendas-a.vendas),
+    total: ativas.length, com_utm: ativas.filter(r=>r.canal!=="Gaia One").length,
+    sem_utm: ativas.filter(r=>r.canal==="Gaia One").length,
+    pct_utm: ativas.length > 0 ? Math.round(ativas.filter(r=>r.canal!=="Gaia One").length/ativas.length*100) : 0
+  };
+
+  const utm_by_month = {};
+  MONTHS.forEach(m => {
+    const a_m = ativas.filter(r => r.mesIni === m);
+    const cmap = {};
+    a_m.forEach(r => { if(!cmap[r.canal]) cmap[r.canal]={canal:r.canal,canal_grupo:r.canal,vendas:0,receita:0}; cmap[r.canal].vendas++; });
+    utm_by_month[m] = { por_canal: Object.values(cmap).sort((a,b)=>b.vendas-a.vendas),
+      total:a_m.length, com_utm:a_m.filter(r=>r.canal!=="Gaia One").length,
+      sem_utm:a_m.filter(r=>r.canal==="Gaia One").length,
+      pct_utm:a_m.length>0?Math.round(a_m.filter(r=>r.canal!=="Gaia One").length/a_m.length*100):0 };
+  });
+
+  // ── RENOV por produto ──
+  const renov_prod = {};
+  ativas.filter(r=>r.cobr>=2).forEach(r=>{ renov_prod[r.produto]=(renov_prod[r.produto]||0)+1; });
+  const renov_list = Object.entries(renov_prod).sort((a,b)=>b[1]-a[1]).map(([p,v])=>{
+    const pl = (prod_active[p]||{}).plano || "Mensal";
+    return {pnorm:p,produto:p,plano:pl,renovacoes:v};
+  });
+  const renov_mes = MONTHS.map(m=>{return{mes:m,renovacoes:by_month[m].renov};});
+
+  // ── TRIALS MAI DETAIL (compatibilidade) ──
+  const trials_mai_detail = {
+    total: conv_por_produto.reduce((a,r)=>a+r.total,0),
+    converteram: ativasComTrial.length,
+    nao_converteram: trials.length,
+    protagon_total: conv_por_produto.filter(r=>r.produto.includes("Protagon")).reduce((a,r)=>a+r.total,0),
+    protagon_conv: conv_por_produto.filter(r=>r.produto.includes("Protagon")).reduce((a,r)=>a+r.conv,0),
+    protagon_nao_conv: conv_por_produto.filter(r=>r.produto.includes("Protagon")).reduce((a,r)=>a+r.trial,0),
+    por_produto: conv_por_produto,
+    conv_por_produto,
+    trials_jun_total: by_month["2026-06"] ? by_month["2026-06"].trials : 0,
+    trials_jun_por_produto: by_month["2026-06"] ? by_month["2026-06"].trial_rank : []
+  };
+
+  // ── Monta D ──
+  const D_obj = {
+    months: MONTHS,
+    by_month,
+    totals: {
+      eom: ativas.length, trials: trials.length, churn: churnReal.length,
+      novas: ativas.filter(r=>!r.temTrial).length,
+      men: ativas.filter(r=>r.plano==="Mensal"&&!r.temTrial).length,
+      anu: ativas.filter(r=>r.plano==="Anual").length,
+      renov: ativas.filter(r=>r.cobr>=2).length,
+      receita: 0, mrr: 0, meta: null, meta_pct: null,
+      rec_nova_men: 0, rec_nova_anu: 0, receita_nova: 0,
+      by_product: ap_list, churn_rank: churn_global, churn_detail: churn_global,
+      trial_expiry: [], trial_rank: tp_list,
+      daily: [], daily_trials: [], calendar: [], has_trials: trials.length > 0,
+      utm: utm_global
+    },
+    evolution,
+    active_now: {
+      total: ativas.length, total_atr: inativas.length,
+      mensal: mens.length, anual: anual.length,
+      mrr: Math.round(mrr_men*100)/100,
+      mrr_men: Math.round(mrr_men*100)/100,
+      mrr_cobr2: Math.round(mrr_cobr2*100)/100,
+      mrr_anu: 0,
+      arr: Math.round(arr_real*100)/100,
+      trials_total: trials.length,
+      trials_protagon: trials.filter(r=>r.canal==="Protagon").length,
+      trials_alunos: trials.filter(r=>r.canal==="Alunos").length,
+      by_product: ap_list, trial_prod_rank: tp_list, trial_expiry: []
+    },
+    churn_detail: {global: churn_global},
+    churn_detail_global: churn_global,
+    trial_expiry_all: [],
+    drill: {
+      ativas_por_produto: ap_list, trial_por_produto: tp_list,
+      renov_por_produto: renov_list, renov_por_mes: renov_mes,
+      mrr_base: Math.round(mrr_men*100)/100,
+      arr_real: Math.round(arr_real*100)/100,
+      mrr_mensal: Math.round(mrr_men*100)/100,
+      mrr_cobr2: Math.round(mrr_cobr2*100)/100,
+      arr_contratos: Math.round(arr_cont*100)/100,
+      subs_mensal: mens.length, subs_anual: anual.length,
+      subs_cobr2: mens.filter(r=>r.cobr>=2).length,
+      total_renov: ativas.filter(r=>r.cobr>=2).length,
+      trials_mai_detail
+    },
+    trials_mai_detail
+  };
+
+  const MRR_BK_obj = {
+    mrr_base: Math.round(mrr_men*100)/100,
+    arr_real: Math.round(arr_real*100)/100,
+    mrr_cobr2: Math.round(mrr_cobr2*100)/100,
+    subs_mensal: mens.length, subs_anual: anual.length,
+    subs_cobr2: mens.filter(r=>r.cobr>=2).length,
+    mrr_mensal: Math.round(mrr_men*100)/100,
+    mrr_anual: 0,
+    arr_contratos: Math.round(arr_cont*100)/100,
+    by_month: Object.fromEntries(MONTHS.map(m => [m, {
+      mrr_total: 0, mrr_r1_men: 0, mrr_r1_anu: 0, mrr_r2: 0, mrr_r3: 0,
+      rec_nova_men: 0, rec_nova_anu: 0, rec_total: 0,
+      n_renov: by_month[m].renov, n_novas_men: by_month[m].novas, n_anu_d30: by_month[m].anu
+    }]))
+  };
+
+  const FIN_obj = {
+    mrr_base: Math.round(mrr_men*100)/100,
+    arr_real: Math.round(arr_real*100)/100,
+    mrr_cobr2: Math.round(mrr_cobr2*100)/100,
+    arr_contratos: Math.round(arr_cont*100)/100,
+    caixa_por_mes: Object.fromEntries(MONTHS.map(m => [m, {
+      mes: m, rec_pix_d0: 0, rec_cartao_d30: 0, mrr_total: 0,
+      mrr_r1_men: 0, mrr_r1_anu: 0, mrr_r2: 0, mrr_r3: 0,
+      rec_novas_men: 0, rec_novas_anu: 0, rec_total: 0, n_total: 0
+    }])),
+    projecao: {
+      junho: {label:"Jun/26", confirmado:0, mrr_recorrente:Math.round(mrr_men*100)/100, total_projetado:Math.round(mrr_men*100)/100},
+      julho: {label:"Jul/26", mrr_recorrente:Math.round(mrr_men*100)/100, anuais_d30_jun:0, n_anuais_jun:0, total_projetado:Math.round(mrr_men*100)/100}
+    }
+  };
+
+  const CONV_DATA_obj = {
+    por_produto: conv_por_produto,
+    por_mes: conv_por_mes,
+    resumo: {
+      total_entraram_trial: ativasComTrial.length + trials.length,
+      total_converteram: ativasComTrial.length,
+      total_ainda_trial: trials.length,
+      conv_rate_global: (ativasComTrial.length + trials.length) > 0
+        ? Math.round(ativasComTrial.length / (ativasComTrial.length + trials.length) * 1000) / 10
+        : 0
+    }
+  };
+
+  const UTM_DATA_obj = { global: utm_global, by_month: utm_by_month };
+
+  return {
+    D: D_obj, MRR_BK: MRR_BK_obj, FIN: FIN_obj,
+    CONV_DATA: CONV_DATA_obj, UTM_DATA: UTM_DATA_obj,
+    churn_total: churnReal.length,
+    churn_rate: churnRate,
+    trials_total: trials.length,
+    mrr_men: Math.round(mrr_men*100)/100,
+    mrr_cobr2: Math.round(mrr_cobr2*100)/100,
+    arr_contratos: Math.round(arr_cont*100)/100,
+    subs
+  };
+}
+
+/* ── UI ── */
+function updateLoading(msg) {
+  const el = document.getElementById("loading-msg");
+  if (el) el.textContent = msg;
+}
+
+function showLoading(show) {
+  const el = document.getElementById("loading-overlay");
+  if (el) el.style.display = show ? "flex" : "none";
+}
+
+function showError(msg) {
+  const el = document.getElementById("loading-overlay");
+  if (!el) return;
+  el.innerHTML = `
+    <div style="max-width:520px;text-align:center;padding:32px">
+      <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">Erro ao conectar com o banco</div>
+      <div style="font-size:13px;color:#f87171;background:#1a1a2e;padding:10px 16px;border-radius:6px;margin:12px 0;font-family:monospace">${msg}</div>
+      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px">
+        Para funcionar, este dashboard precisa ser servido via <b>HTTP</b> (não pode ser aberto como arquivo local).
+      </div>
+      <div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:16px;text-align:left;margin-bottom:20px">
+        <div style="font-size:11px;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">▶ Solução: execute este comando no terminal</div>
+        <code style="font-family:monospace;font-size:14px;color:#4ade80">python3 INICIAR_DASHBOARD.py</code>
+        <div style="font-size:11px;color:#64748b;margin-top:8px">— ou —</div>
+        <code style="font-family:monospace;font-size:13px;color:#60a5fa">python3 -m http.server 8080</code>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px">Depois acesse: <b style="color:#fff">http://localhost:8080/GAIA_ONE_DASH_LIVE.html</b></div>
+      </div>
+      <button onclick="loadAndRender()" style="background:#3b82f6;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;margin-right:8px">🔄 Tentar novamente</button>
+      <button onclick="document.getElementById('loading-overlay').style.display='none'" style="background:#374151;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px">Ver dashboard (sem dados)</button>
+    </div>
+  `;
+  el.style.display = "flex";
+}
+
+function showError(msg) {
+  const el = document.getElementById("loading-overlay");
+  if (!el) return;
+  el.innerHTML = `
+    <div style="max-width:520px;text-align:center;padding:32px">
+      <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px">Erro ao conectar com o banco</div>
+      <div style="font-size:13px;color:#f87171;background:rgba(0,0,0,0.4);padding:10px 16px;border-radius:6px;margin:12px 0;font-family:monospace">${msg || "Failed to fetch"}</div>
+      <div style="font-size:13px;color:#94a3b8;margin-bottom:20px">
+        Este dashboard precisa ser servido via <b style="color:#fff">HTTP</b>.<br>Abrir como arquivo local (file://) não funciona por restrições de segurança do browser.
+      </div>
+      <div style="background:rgba(0,0,0,0.3);border:1px solid #334155;border-radius:8px;padding:16px;text-align:left;margin-bottom:20px">
+        <div style="font-size:11px;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">▶ Solução — execute no terminal na pasta do arquivo:</div>
+        <div style="margin:6px 0"><code style="font-family:monospace;font-size:14px;color:#4ade80">python3 INICIAR_DASHBOARD.py</code></div>
+        <div style="font-size:11px;color:#64748b;margin:8px 0">— ou —</div>
+        <div style="margin:6px 0"><code style="font-family:monospace;font-size:13px;color:#60a5fa">python3 -m http.server 8080</code></div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:10px">Depois abra: <b style="color:#fff">http://localhost:8080/GAIA_ONE_DASH_LIVE.html</b></div>
+      </div>
+      <button onclick="loadAndRender()" style="background:#3b82f6;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;margin-right:8px">🔄 Tentar novamente</button>
+      <button onclick="document.getElementById('loading-overlay').style.display='none'" style="background:#374151;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:14px">✕ Fechar</button>
+    </div>
+  `;
+  el.style.display = "flex";
+}
+
+function updateTimestamp() {
+  const el = document.getElementById("last-updated");
+  if (el) el.textContent = "Atualizado: " + new Date().toLocaleTimeString("pt-BR");
+}
+
+/* ── RENDER ── */
+function renderDashboard(data) {
+  // Tornar variáveis globais (usado pelo buildMain, buildKpiGrid, etc.)
+  window.D         = data.D;
+  window.MRR_BK    = data.MRR_BK;
+  window.FIN       = data.FIN;
+  window.CONV_DATA = data.CONV_DATA;
+  window.UTM_DATA  = data.UTM_DATA;
+  window.PROT_FUNNEL = {
+    total_entraram: data.CONV_DATA.resumo.total_entraram_trial,
+    ativas: data.D.active_now.total,
+    atrasadas: 0,
+    trial_aberto: data.trials_total,
+    nunca_pagou: 0,
+    pagou_alguma_vez: data.D.active_now.total,
+    conv_rate_global: data.CONV_DATA.resumo.conv_rate_global,
+    eventos: {},
+    por_produto: data.CONV_DATA.por_produto,
+    receita: {total: 0, por_oferta: []}
+  };
+  window.mrr_men_js       = data.mrr_men;
+  window.mrr_cobr2_js     = data.mrr_cobr2;
+  window.arr_contratos_js = data.arr_contratos;
+  window.churn_total_js   = data.churn_total;
+  window.churn_rate_js    = data.churn_rate;
+  window.trials_total_js  = data.trials_total;
+  window.proj_jul_anu_js  = 0;
+  window.proj_jul_total_js= data.mrr_men;
+
+  buildTopBadges(D.totals);
+  buildKpiGrid(D.totals);
+  buildMain(D.totals);
+  updateTimestamp();
+}
+
+/* ── AVISO SEM RECEITA ── */
+function injectRevenueNotice() {
+  // Patch: aba Receita mostra aviso
+  const origBuildMain = window.buildMain;
+  // Será tratado no próprio buildMain via flag
+}
+
+/* ── INIT & AUTO-REFRESH ── */
+async function loadAndRender() {
+  showLoading(true);
+  updateLoading("Conectando ao banco de dados...");
+  try {
+    const rawSubs = await fetchAllSubs();
+    updateLoading("Processando dados...");
+    const data = processData(rawSubs);
+    renderDashboard(data);
+    showLoading(false);
+  } catch(err) {
+    console.error("Erro Supabase:", err);
+    showError(err.message);
+  }
+}
+
+// Init
+document.addEventListener("DOMContentLoaded", () => {
+  loadAndRender();
+  // Auto-refresh a cada 5 minutos
+  setInterval(() => {
+    loadAndRender();
+  }, 5 * 60 * 1000);
+});
+
+
+var ML={"2026-02":"Fev/26","2026-03":"Mar/26","2026-04":"Abr/26","2026-05":"Mai/26","2026-06":"Jun/26"};
+var months=["2026-02","2026-03","2026-04","2026-05","2026-06"];
+var curM="all", curO="painel", curCard=null;
+
+function num(n){return new Intl.NumberFormat("pt-BR").format(Math.round(n||0));}
+function fF(n){return "R$ "+new Intl.NumberFormat("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);}
+function fR(n){
+  n=n||0;
+  if(n>=1000000) return "R$"+new Intl.NumberFormat("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}).format(n/1000000)+"M";
+  if(n>=1000) return "R$"+new Intl.NumberFormat("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:1}).format(n/1000)+"k";
+  return fF(n);
+}
+function bar(v,mx,color){
+  var pct=mx>0?Math.round(v/mx*100):0;
+  return "<div class='bbg'><div class='bbf' style='width:"+pct+"%;background:"+color+"'></div></div>";
+}
+function plB(p){
+  return p==="Anual"?"<span class='bd b-bl'>Anual</span>":"<span class='bd b-gr'>Mensal</span>";
+}
+function gD(){return curM==="all"?D.totals:(D.by_month[curM]||D.totals);}
+
+// Event delegation for selectors
+document.addEventListener("click", function(e){
+  var btn = e.target.closest("button.sb");
+  if(!btn) return;
+  var type = btn.getAttribute("data-type");
+  var val = btn.getAttribute("data-val");
+  if(!type || !val) return;
+  sel(type, val, btn);
+});
+
+// Event delegation for kpi cards
+document.addEventListener("click", function(e){
+  var kc = e.target.closest(".kcard");
+  if(!kc) return;
+  var id = kc.getAttribute("data-card");
+  if(id) clickCard(id);
+});
+
+function sel(type, val, btn){
+  if(type==="m"){
+    curM=val;
+    document.querySelectorAll(".sg:first-of-type .sb").forEach(function(b){b.classList.remove("on");});
+  } else {
+    curO=val;
+    document.querySelectorAll(".sg:last-of-type .sb").forEach(function(b){b.classList.remove("on");});
+  }
+  btn.classList.add("on");
+  curCard=null;
+  document.getElementById("drill-panel").style.display="none";
+  document.querySelectorAll(".kcard").forEach(function(k){k.classList.remove("active");});
+  var d=gD();
+  var mLbl=curM==="all"?"Historico":(ML[curM]||curM);
+  var oLbls={painel:"Painel",subs:"Assinaturas",trials:"Trials",churn:"Churn",financeiro:"Receita",canais:"Canais"};
+  document.getElementById("ctx-h2").textContent=(oLbls[curO]||"Painel")+" - "+mLbl;
+  document.getElementById("ctx-sub").textContent=curM==="all"?"Fev a Jun 2026 - todos os dados":mLbl+" - Digital Manager Guru";
+  var meta=d.meta;
+  document.getElementById("ctx-meta").textContent=meta?("Meta: "+num(d.novas||0)+"/"+num(meta)+" ("+(d.meta_pct||0)+"%)"):("");
+  buildTopBadges(d);
+  if(curO!=="financeiro" && curO!=="canais") buildKpiGrid(d);
+  buildMain(d);
+}
+
+function buildTopBadges(d){
+  var isAll=curM==="all";
+  var tot=D.totals;
+  document.getElementById("top-badges").innerHTML=
+    "<span class='bd b-gr'>"+(isAll?num(tot.novas):num(d.novas||0))+" novas</span>"+
+    "<span class='bd b-bl'>"+fR(isAll?tot.receita:(d.receita||0))+"</span>"+
+    (isAll?"<span class='bd b-am'>"+num(tot.trials)+" trials</span>":
+      (d.trials?"<span class='bd b-am'>"+num(d.trials||0)+" trials</span>":""))+
+    "<span class='bd b-re'>"+num(D.active_now.total)+" ativas</span>";
+}
+
+function kcard(id,label,val,sub,cls){
+  return "<div class='kcard "+cls+"' data-card='"+id+"'>"
+    +"<div class='kl'>"+label+"</div>"
+    +"<div class='kv'>"+val+"</div>"
+    +"<div class='ks'>"+sub+"</div>"
+    +"</div>";
+}
+
+function buildKpiGrid(d){
+  var isAll=curM==="all";
+  var mLbl=curM==="all"?"historico":(ML[curM]||curM);
+  var eom=isAll?D.active_now.total:(d.eom||0);
+  var tri=isAll?D.active_now.trials_total:(d.trials||0);
+  var ch=d.churn||0; var novas=d.novas||0;
+  var mrrShow=isAll?MRR_BK.mrr_base:(d.receita||0);
+  var mrrSub=isAll?fF(MRR_BK.mrr_base)+" mensais recorrentes":fF(d.receita||0)+" receita "+mLbl;
+  document.getElementById("kpi-grid").innerHTML=
+    kcard("ativas","Assinaturas ativas","<span class='grn'>"+num(eom)+"</span>","Acumulado fim de "+mLbl+" - clique","k-grn")+
+    kcard("trials","Trials ativos","<span class='amb'>"+num(tri)+"</span>",(tri===0?"Sem data":num(tri)+" abertos em "+mLbl)+" - clique","k-am")+
+    kcard("mrr","MRR","<span class='blu'>"+fR(mrrShow)+"</span>",mrrSub+" - clique","k-bl")+
+    kcard("arr","ARR","<span class='blu'>"+fR(MRR_BK.arr_real)+"</span>",fF(MRR_BK.arr_real)+" so mensais x12 - clique","k-bl")+
+    kcard("renov","Renovacoes (2+)","<span>"+num(d.renov||0)+"</span>","Em "+mLbl+" ciclo 2+ - clique","")+
+    kcard("churn","Churn rate","<span class='red'>"+(isAll?churn_rate_js+"%":((novas+ch>0?Math.round(ch/(novas+ch)*100):0)+"%"))+"</span>",(isAll?churn_total_js+" churn real":ch+" churn / "+novas+" no mes")+" - clique","k-re");
+}
+
+function clickCard(id){
+  if(curCard===id){
+    curCard=null;
+    document.getElementById("drill-panel").style.display="none";
+    var el=document.querySelector(".kcard[data-card='"+id+"']");
+    if(el) el.classList.remove("active");
+    return;
+  }
+  if(curCard){
+    var prev=document.querySelector(".kcard[data-card='"+curCard+"']");
+    if(prev) prev.classList.remove("active");
+  }
+  curCard=id;
+  var kc=document.querySelector(".kcard[data-card='"+id+"']");
+  if(kc) kc.classList.add("active");
+  var dp=document.getElementById("drill-panel");
+  dp.style.display="block";
+  dp.innerHTML="<div class='dpanel'>"+getDrill(id)+"</div>";
+}
+
+function closeDrill(){
+  if(curCard){var el=document.querySelector(".kcard[data-card='"+curCard+"']"); if(el) el.classList.remove("active");}
+  curCard=null;
+  document.getElementById("drill-panel").style.display="none";
+}
+
+function getDrill(id){
+  var d=gD();
+  var mLbl=curM==="all"?"Historico":(ML[curM]||curM);
+  var isAll=curM==="all";
+
+  if(id==="ativas"){
+    var ap=D.drill.ativas_por_produto||[];
+    var maxM=Math.max.apply(null,ap.map(function(r){return r.mrr||0;}).concat([1]));
+    var rows=ap.map(function(r,i){
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td>"+r.subs+"</td><td><b>"+fF(r.mrr)+"</b></td><td>"+fF(r.ticket)+"</td>"
+        +"<td>"+r.pct_mrr+"%</td><td>"+bar(r.mrr,maxM,"#1a6b38")+"</td></tr>";
+    }).join("");
+    return "<div class='dh'><span class='dt'>Assinaturas ativas por produto</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='three' style='margin-bottom:12px'>"
+      +"<div style='text-align:center;padding:12px;background:#f0faf4;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>ATIVAS</div><div style='font-size:24px;font-weight:700;color:#1a6b38'>"+num(D.active_now.total)+"</div><div style='font-size:10px;color:#888'>+"+num(D.active_now.total_atr)+" pastdue</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f0f6ff;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>MRR</div><div style='font-size:24px;font-weight:700;color:#1255a4'>"+fF(MRR_BK.mrr_base)+"</div><div style='font-size:10px;color:#888'>"+num(MRR_BK.subs_mensal)+" mensais</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f0f6ff;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>ARR</div><div style='font-size:24px;font-weight:700;color:#1255a4'>"+fF(MRR_BK.arr_real)+"</div></div>"
+      +"</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Subs</th><th>MRR</th><th>Ticket</th><th>%MRR</th><th>Barra</th></tr></thead><tbody>"+rows+"</tbody></table>";
+  }
+
+  if(id==="trials"){
+    var tp=D.drill.trial_por_produto||[];
+    var tmd=D.trials_mai_detail||{};
+    var pns=tmd.protagon_nao_status||[];
+    var maxT=Math.max.apply(null,tp.map(function(r){return r.trials||0;}).concat([1]));
+    var rows2=tp.map(function(r,i){
+      var cls2=r.conv_rate>=30?"b-gr":r.conv_rate>=15?"b-am":"b-re";
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td><b>"+r.trials+"</b></td><td><span class='bd "+cls2+"'>"+r.conv_rate+"%</span></td>"
+        +"<td>"+bar(r.trials,maxT,"#D85A30")+"</td></tr>";
+    }).join("");
+    var pnsText=pns.map(function(r){return r.count+" "+r.status;}).join(" - ");
+    return "<div class='dh'><span class='dt'>Trials - detalhamento</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='info iamb'><b>Trials Protagon Maio->Junho:</b> "+num(tmd.protagon_total||0)+" trials -> "
+      +num(tmd.protagon_conv||0)+" converteram -> "+num(tmd.protagon_nao_conv||0)+" nao converteram. Nao conv: "+pnsText+"</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Trials ativos</th><th>Conv%</th><th>Barra</th></tr></thead><tbody>"+rows2+"</tbody></table>";
+  }
+
+  if(id==="mrr"){
+    var bm=MRR_BK.by_month[curM]||null;
+    var fn=function(key,fallback){return isAll?months.reduce(function(a,m){return a+(MRR_BK.by_month[m]?MRR_BK.by_month[m][key]:0);},0):(bm?bm[key]:fallback||0);};
+    var rRenov=fn("rec_mrr_renov"); var rNmen=fn("rec_nova_men"); var rNanu=fn("rec_nova_anu");
+    var rTot=fn("rec_total"); var nRenov=fn("n_mrr_renov"); var nNmen=fn("n_novas_men"); var nNanu=fn("n_novas_anu");
+    var mx=Math.max(rRenov,rNmen,rNanu,MRR_BK.mrr_base,1);
+    var pct3=function(v){return rTot>0?Math.round(v/rTot*100):0;};
+    var rows3="<tr style='background:#f0f6ff'><td><b>MRR Recorrente</b><br><small>"+num(MRR_BK.subs_mensal)+" mensais todo mes</small></td>"
+      +"<td>"+num(MRR_BK.subs_mensal)+"</td><td><b style='color:#1255a4'>"+fF(MRR_BK.mrr_base)+"</b></td>"
+      +"<td>"+pct3(MRR_BK.mrr_base)+"%</td><td><span class='bd b-gr'>Sim</span></td><td>"+bar(MRR_BK.mrr_base,mx,"#3266ad")+"</td></tr>"
+      +"<tr><td><b>Renov. mensais mes</b><br><small>Ciclo 2+</small></td><td>"+nRenov+"</td><td><b style='color:#1255a4'>"+fF(rRenov)+"</b></td>"
+      +"<td>"+pct3(rRenov)+"%</td><td><span class='bd b-gr'>Sim</span></td><td>"+bar(rRenov,mx,"#3266ad")+"</td></tr>"
+      +"<tr><td><b>Novas mensais</b><br><small>Ciclo 1 mensal</small></td><td>"+nNmen+"</td><td><b style='color:#1a6b38'>"+fF(rNmen)+"</b></td>"
+      +"<td>"+pct3(rNmen)+"%</td><td><span class='bd b-gr'>Vira MRR</span></td><td>"+bar(rNmen,mx,"#1D9E75")+"</td></tr>"
+      +"<tr><td><b>Novas anuais (D+30)</b><br><small>Ciclo 1 anual - pontual</small></td><td>"+nNanu+"</td><td><b style='color:#D85A30'>"+fF(rNanu)+"</b></td>"
+      +"<td>"+pct3(rNanu)+"%</td><td><span class='bd b-re'>Pontual</span></td><td>"+bar(rNanu,mx,"#D85A30")+"</td></tr>"
+      +"<tr style='border-top:2px solid #1a1a18;background:#fafaf8;font-weight:700'><td><b>TOTAL</b></td>"
+      +"<td>"+(nRenov+nNmen+nNanu)+"</td><td><b>"+fF(rTot)+"</b></td><td>100%</td><td>-</td><td>-</td></tr>";
+    return "<div class='dh'><span class='dt'>MRR - de onde vem cada R$ em "+mLbl+"</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='info ibl'><b>ARR = R$ "+fF(MRR_BK.arr_real)+"/ano</b> - so mensais x12. Anuais pagam D+30 e NAO entram no ARR.</div>"
+      +"<table class='tbl'><thead><tr><th>Origem</th><th>Qtd</th><th>Valor</th><th>%</th><th>Recorrente?</th><th>Barra</th></tr></thead><tbody>"+rows3+"</tbody></table>";
+  }
+
+  if(id==="arr"){
+    var ap2=D.drill.ativas_por_produto.filter(function(r){return r.plano==="Mensal";});
+    var maxM2=Math.max.apply(null,ap2.map(function(r){return r.mrr||0;}).concat([1]));
+    var rows4=ap2.map(function(r,i){
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td>"
+        +"<td>"+r.subs+"</td><td>"+fF(r.mrr)+"</td><td><b>"+fF(r.mrr*12)+"</b></td>"
+        +"<td>"+bar(r.mrr,maxM2,"#3266ad")+" <small>"+r.pct_mrr+"%</small></td></tr>";
+    }).join("");
+    return "<div class='dh'><span class='dt'>ARR - projecao anual recorrente</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='info ired'><b>MRR Projetado = "+fF(mrr_men_js)+" ("+num(D.active_now.mensal)+" mensais).</b><br>cobr≥2 recorrência provada: "+fF(mrr_cobr2_js)+" (163 subs).<br><b>ARR = "+fR(FIN.arr_real)+"</b> = mensais×12 + contratos anuais ("+fR(arr_contratos_js)+").<br>Anuais pagam D+30 valor total — renovam em D+365.</div>"
+      +"<div class='three' style='margin-bottom:12px'>"
+      +"<div style='text-align:center;padding:12px;background:#f0f6ff;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>ARR REAL</div><div style='font-size:22px;font-weight:700;color:#1255a4'>"+fF(MRR_BK.arr_real)+"</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f0faf4;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>MRR MENSAL</div><div style='font-size:22px;font-weight:700;color:#1a6b38'>"+fF(MRR_BK.mrr_base)+"</div><div style='font-size:10px;color:#888'>"+num(MRR_BK.subs_mensal)+" subs</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px'><div style='font-size:10px;color:#a32d2d;font-weight:700'>ANUAIS ("+num(MRR_BK.subs_anual)+")</div><div style='font-size:22px;font-weight:700;color:#888'>-</div><div style='font-size:10px;color:#a32d2d'>D+30 - NAO entram no ARR</div></div>"
+      +"</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Subs</th><th>MRR</th><th>ARR</th><th>% ARR</th></tr></thead><tbody>"+rows4
+      +"<tr style='border-top:2px solid #1a1a18;background:#fafaf8'><td colspan='2'><b>TOTAL</b></td>"
+      +"<td>"+num(MRR_BK.subs_mensal)+"</td><td>"+fF(MRR_BK.mrr_base)+"</td>"
+      +"<td><b style='color:#1255a4'>"+fF(MRR_BK.arr_real)+"</b></td><td>100%</td></tr>"
+      +"</tbody></table>";
+  }
+
+  if(id==="renov"){
+    var rp=D.drill.renov_por_produto||[];
+    var rm2=D.drill.renov_por_mes||[];
+    var maxR=Math.max.apply(null,rm2.map(function(r){return r.renovacoes||0;}).concat([1]));
+    var rows5=rp.map(function(r,i){return "<tr><td class='rnk'>"+(i+1)+"</td><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b>"+r.renovacoes+"</b></td></tr>";}).join("");
+    var rows6=rm2.map(function(r){return "<tr><td><b>"+(ML[r.mes]||r.mes)+"</b></td><td>"+num(r.renovacoes||0)+"</td><td>"+bar(r.renovacoes,maxR,"#854f0b")+"</td></tr>";}).join("");
+    return "<div class='dh'><span class='dt'>Renovacoes (ciclo 2+)</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='two'>"
+      +"<div><div class='ct'>Por produto</div><table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Renov</th></tr></thead><tbody>"+rows5+"</tbody></table></div>"
+      +"<div><div class='ct'>Por mes</div><table class='tbl'><thead><tr><th>Mes</th><th>Renovacoes</th><th>Barra</th></tr></thead><tbody>"+rows6+"</tbody></table></div>"
+      +"</div>";
+  }
+
+  if(id==="churn"){
+    var cp=D.churn_detail_global||[];
+    var maxCh=Math.max.apply(null,cp.map(function(r){return r.churn||0;}).concat([1]));
+    var rows7=cp.map(function(r,i){
+      var cc=r.churn_rate>=30?"red":r.churn_rate>=15?"amb":"grn";
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td>"+r.ativas+"</td><td><b class='red'>"+r.churn+"</b></td>"
+        +"<td><span class='"+cc+"'><b>"+r.churn_rate+"%</b></span></td>"
+        +"<td>"+bar(r.churn,maxCh,"#a32d2d")+"</td></tr>";
+    }).join("");
+    return "<div class='dh'><span class='dt'>Churn por produto</span><span class='dx' onclick='closeDrill()'>x</span></div>"
+      +"<div class='three' style='margin-bottom:12px'>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px'><div style='font-size:10px;color:#a32d2d;font-weight:700'>CHURN REAL</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>85</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f8f8f6;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>TRIAL CANCEL</div><div style='font-size:28px;font-weight:700;color:#888'>599</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px'><div style='font-size:10px;color:#a32d2d;font-weight:700'>CHURN RATE</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>18,2%</div></div>"
+      +"</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Ativas</th><th>Churn</th><th>Rate</th><th>Barra</th></tr></thead><tbody>"+rows7+"</tbody></table>";
+  }
+  return "";
+}
+
+function buildMain(d){
+  var isAll=curM==="all";
+  var mLbl=curM==="all"?"Historico":(ML[curM]||curM);
+  var mc=document.getElementById("main-content");
+
+  if(curO==="painel"){
+    var ev=D.evolution||[];
+    var bp=d.by_product||[];
+    var cal=d.calendar||[];
+    var tmd=D.trials_mai_detail||{};
+    var pns=tmd.protagon_nao_status||[];
+
+    var evRows=ev.map(function(r){
+      var isCur=r.mes===curM;
+      return "<tr style='"+(isCur?"background:#f0f6ff;font-weight:600":"")+"'>"
+        +"<td><b>"+(ML[r.mes]||r.mes)+"</b></td>"
+        +"<td><b class='grn'>"+num(r.novas)+"</b></td>"
+        +"<td><span style='color:#1a6b38'>"+num(r.men)+"</span></td>"
+        +"<td><span class='blu'>"+num(r.anu)+"</span></td>"
+        +"<td><span class='amb'>"+num(r.renov)+"</span></td>"
+        +"<td><span style='color:#D85A30'>"+num(r.trials)+"</span></td>"
+        +"<td><span class='red'>"+num(r.churn)+"</span></td>"
+        +"<td>"+num(r.eom)+"</td>"
+        +"<td><b>"+fF(r.receita)+"</b></td></tr>";
+    }).join("");
+
+    var maxBP=Math.max.apply(null,bp.map(function(r){return r.novas||0;}).concat([1]));
+    var bpRows=bp.filter(function(r){return r.novas>0||r.renov>0;}).map(function(r,i){
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td><b>"+num(r.novas)+"</b></td><td>"+num(r.renov)+"</td><td>"+num(r.trials)+"</td>"
+        +"<td>"+fF(r.receita)+"</td><td>"+bar(r.novas,maxBP,"#1a6b38")+"</td></tr>";
+    }).join("");
+
+    var snapRows=[["Ativas (active)",num(D.active_now.total),"grn"],
+      ["Pastdue",num(D.active_now.total_atr),"amb"],
+      ["Trials ativos",num(D.active_now.trials_total),"amb"],
+      ["MRR",fF(MRR_BK.mrr_base),"blu"],["ARR",fF(MRR_BK.arr_real),"blu"],
+      ["Churn real",churn_total_js+" ("+churn_rate_js+"%)","red"],["Trial cancel",num(trials_total_js),""]].map(function(r){
+      return "<div class='statrow'><span class='statk'>"+r[0]+"</span><span class='statv "+r[2]+"'>"+r[1]+"</span></div>";
+    }).join("");
+
+    var pnsText=pns.map(function(r){return r.count+" "+r.status;}).join(" - ");
+    var triRows=[["Total abertos em maio",num(tmd.total||0),""],
+      ["Protagon trials",num(tmd.protagon_total||0),""],
+      ["Converteram",num(tmd.protagon_conv||0),"grn"],
+      ["Nao converteram",num(tmd.protagon_nao_conv||0),"red"]].map(function(r){
+      return "<div class='statrow'><span class='statk'>"+r[0]+"</span><span class='statv "+r[2]+"'>"+r[1]+"</span></div>";
+    }).join("");
+
+    var calHtml="";
+    if(!isAll && cal.length>0){
+      var days2=["Dom","Seg","Ter","Qua","Qui","Sex","Sab"];
+      calHtml="<div class='card'><div class='ct'>Calendario - "+mLbl+"</div><div class='cal'>"
+        +days2.map(function(d2){return "<div class='calh'>"+d2+"</div>";}).join("");
+      var firstDay=new Date(cal[0].dia+"T12:00:00").getDay();
+      for(var i=0;i<firstDay;i++) calHtml+="<div></div>";
+      cal.forEach(function(day){
+        var dt=new Date(day.dia+"T12:00:00");
+        calHtml+="<div class='cald'>"
+          +"<div class='caln'>"+(dt.getDate())+"</div>"
+          +(day.novas>0?"<div class='caldot grn'>"+day.novas+"N</div>":"")
+          +(day.trials>0?"<div class='caldot amb'>"+day.trials+"T</div>":"")
+          +(day.renov>0?"<div class='caldot blu'>"+day.renov+"R</div>":"")
+          +(day.receita>0?"<div style='font-size:8px;color:#aaa'>"+fR(day.receita)+"</div>":"")
+          +"</div>";
+      });
+      calHtml+="</div></div>";
+    }
+
+    mc.innerHTML=
+      "<div class='card'><div class='ct'>Evolucao mes a mes</div>"
+      +"<table class='tbl'><thead><tr><th>Mes</th><th>Novas</th><th>M</th><th>A</th><th>Renov</th><th>Trials</th><th>Churn</th><th>EOM</th><th>Receita</th></tr></thead><tbody>"+evRows+"</tbody></table></div>"
+      +(bpRows?"<div class='card'><div class='ct'>Produtos - "+mLbl+"</div>"
+        +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Novas</th><th>Renov</th><th>Trials</th><th>Receita</th><th>Barra</th></tr></thead><tbody>"+bpRows+"</tbody></table></div>":"")
+      +"<div class='two'>"
+      +"<div class='card'><div class='ct'>Snapshot atual</div>"+snapRows+"</div>"
+      +"<div class='card'><div class='ct'>Trials Protagon Mai -> Jun</div>"+triRows
+      +"<div style='margin-top:8px;font-size:11px;color:#888'>Nao conv: "+pnsText+"</div></div>"
+      +"</div>"+calHtml;
+    return;
+  }
+
+  if(curO==="subs"){
+    var bp2=isAll?D.totals.by_product:(d.by_product||[]);
+    var ev2=D.evolution;
+    var evRows2=ev2.map(function(r){
+      var isCur=r.mes===curM;
+      return "<tr style='"+(isCur?"background:#f0f6ff;font-weight:600":"")+"'>"
+        +"<td><b>"+(ML[r.mes]||r.mes)+"</b></td><td><b>"+num(r.novas)+"</b></td>"
+        +"<td><span class='grn'>"+num(r.men)+"</span></td>"
+        +"<td><span class='blu'>"+num(r.anu)+"</span></td>"
+        +"<td><span class='amb'>"+num(r.renov)+"</span></td>"
+        +"<td>"+fF(r.receita)+"</td></tr>";
+    }).join("");
+    var bpRows2=bp2.filter(function(r){return r.novas>0||r.renov>0;}).map(function(r,i){
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td><b class='grn'>"+num(r.novas)+"</b></td><td>"+num(r.renov)+"</td><td>"+fF(r.receita)+"</td></tr>";
+    }).join("");
+    mc.innerHTML=
+      "<div class='card'><div class='ct'>Assinaturas novas - "+mLbl+"</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Novas</th><th>Renov</th><th>Receita</th></tr></thead><tbody>"
+      +(bpRows2||"<tr><td colspan='6' style='text-align:center;padding:20px;color:#aaa'>Sem dados</td></tr>")
+      +"</tbody></table></div>"
+      +"<div class='card'><div class='ct'>Evolucao mensal vs anual</div>"
+      +"<table class='tbl'><thead><tr><th>Mes</th><th>Total</th><th>Mensal</th><th>Anual</th><th>Renov</th><th>Receita</th></tr></thead><tbody>"+evRows2+"</tbody></table></div>";
+    return;
+  }
+
+  if(curO==="trials"){
+    var tmd2=D.trials_mai_detail||{};
+    var tp2=D.drill.trial_por_produto||[];
+    var pns2=tmd2.protagon_nao_status||[];
+    var pnsText2=pns2.map(function(r){return r.count+" "+r.status;}).join(" - ");
+    var convRate=tmd2.protagon_total>0?Math.round((tmd2.protagon_conv||0)/(tmd2.protagon_total)*100):0;
+    var ppRows=(tmd2.por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b>"+r.trials+"</b></td></tr>";}).join("");
+    var convRows=(tmd2.conv_por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b class='grn'>"+r.conv+"</b></td></tr>";}).join("");
+    var tp2Rows=tp2.map(function(r,i){
+      var cls2=r.conv_rate>=30?"b-gr":r.conv_rate>=15?"b-am":"b-re";
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td><b>"+r.trials+"</b></td><td><span class='bd "+cls2+"'>"+r.conv_rate+"%</span></td></tr>";
+    }).join("");
+    var junRows=(tmd2.trials_jun_por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b>"+r.trials+"</b></td></tr>";}).join("");
+    mc.innerHTML=
+      "<div class='card' style='border-color:#D85A30'><div class='ct'>Protagon - Trials Maio -> Junho</div>"
+      +"<div class='info iamb'><b>"+num(tmd2.total||0)+" trials abertos em maio vencem em junho.</b> Quem converte = receita em junho. Caixa D+30 = julho.</div>"
+      +"<div class='three' style='margin-bottom:12px'>"
+      +"<div style='text-align:center;padding:12px;background:#fff8f0;border-radius:8px;border:1px solid #f5d980'><div style='font-size:10px;font-weight:700;color:#854f0b'>TOTAL ABERTOS</div><div style='font-size:28px;font-weight:700;color:#854f0b'>"+num(tmd2.total||0)+"</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f0faf4;border-radius:8px;border:1px solid #a8ddb5'><div style='font-size:10px;font-weight:700;color:#1a6b38'>CONVERTERAM</div><div style='font-size:28px;font-weight:700;color:#1a6b38'>"+num(tmd2.protagon_conv||0)+"</div><div style='font-size:10px;color:#888'>"+convRate+"% conv rate</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px;border:1px solid #f5c0c0'><div style='font-size:10px;font-weight:700;color:#a32d2d'>NAO CONVERTERAM</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>"+num(tmd2.protagon_nao_conv||0)+"</div><div style='font-size:10px;color:#888'>"+pnsText2+"</div></div>"
+      +"</div>"
+      +"<div class='two'>"
+      +"<div><div class='ct'>Trials de maio por produto</div><table class='tbl'><thead><tr><th>Produto</th><th>Plano</th><th>Trials</th></tr></thead><tbody>"+ppRows+"</tbody></table></div>"
+      +"<div><div class='ct'>Convertidos por produto</div><table class='tbl'><thead><tr><th>Produto</th><th>Plano</th><th>Conv</th></tr></thead><tbody>"+convRows+"</tbody></table></div>"
+      +"</div></div>"
+      +"<div class='card'><div class='ct'>Trials ativos agora ("+num(D.active_now.trials_total)+")</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Trials</th><th>Conv%</th></tr></thead><tbody>"+tp2Rows+"</tbody></table></div>"
+      +"<div class='card'><div class='ct'>Trials junho - "+num(tmd2.trials_jun_total||0)+" abertos</div>"
+      +"<table class='tbl'><thead><tr><th>Produto</th><th>Plano</th><th>Trials</th></tr></thead><tbody>"+junRows+"</tbody></table></div>";
+    return;
+  }
+
+  if(curO==="churn"){
+    var cp2=D.churn_detail_global||[];
+    var maxCh2=Math.max.apply(null,cp2.map(function(r){return r.churn||0;}).concat([1]));
+    var chRows=cp2.map(function(r,i){
+      var cc2=r.churn_rate>=30?"red":r.churn_rate>=15?"amb":"grn";
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td>"+r.ativas+"</td><td><b class='red'>"+r.churn+"</b></td>"
+        +"<td><span class='"+cc2+"'><b>"+r.churn_rate+"%</b></span></td>"
+        +"<td>"+bar(r.churn,maxCh2,"#a32d2d")+"</td></tr>";
+    }).join("");
+    mc.innerHTML=
+      "<div class='info ired'><b>Churn real = cancelou + tinha pago pelo menos 1 vez.</b> Trial cancel (nunca pagou) = 599 nao e churn.</div>"
+      +"<div class='three' style='margin-bottom:9px'>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px'><div style='font-size:10px;color:#a32d2d;font-weight:700'>CHURN REAL</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>85</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#f8f8f6;border-radius:8px'><div style='font-size:10px;color:#888;font-weight:700'>TRIAL CANCEL</div><div style='font-size:28px;font-weight:700;color:#888'>599</div></div>"
+      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px'><div style='font-size:10px;color:#a32d2d;font-weight:700'>CHURN RATE</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>18,2%</div></div>"
+      +"</div>"
+      +"<div class='card'><div class='ct'>Churn por produto</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Produto</th><th>Plano</th><th>Ativas</th><th>Churn</th><th>Rate</th><th>Barra</th></tr></thead><tbody>"+chRows+"</tbody></table></div>";
+    return;
+  }
+
+  if(curO==="financeiro"){
+    var cpm=FIN.caixa_por_mes||{};
+    var allM2=Object.keys(cpm);
+    var totCaixa=isAll?allM2.reduce(function(a,m){return a+(cpm[m]?cpm[m].rec_total:0);},0):(cpm[curM]?cpm[curM].rec_total:0);
+    var curCpm=isAll?null:(cpm[curM]||null);
+    var totMRR=isAll?allM2.reduce(function(a,m){return a+(cpm[m]?cpm[m].mrr_total:0);},0):(curCpm?curCpm.mrr_total:0);
+    var nMenLabel=isAll?allM2.reduce(function(a,m){return a+(cpm[m]?cpm[m].rec_novas_men:0);},0):(curCpm?curCpm.rec_novas_men:0);
+    var nAnuLabel=isAll?allM2.reduce(function(a,m){return a+(cpm[m]?cpm[m].rec_novas_anu:0);},0):(curCpm?curCpm.rec_novas_anu:0);
+    var pjun=FIN.projecao?FIN.projecao.junho:{};
+    var pjul=FIN.projecao?FIN.projecao.julho:{};
+    var recLabel=isAll?"Histórico":mLbl;
+    document.getElementById("kpi-grid").innerHTML=
+      kcard("mrr","MRR Projetado","<span class='blu'>"+fF(mrr_men_js)+"</span>",num(D.active_now.mensal)+" mensais — "+num(163)+" cobr≥2 comprovadas","k-bl")+
+      kcard("arr","ARR Real","<span class='blu'>"+fR(FIN.arr_real)+"</span>","mensais×12 + contratos anuais","k-bl")+
+      kcard("ativas","Receita "+recLabel,"<span class='grn'>"+fR(totCaixa)+"</span>","Total aprovado no período","k-grn")+
+      kcard("trials","MRR "+recLabel,"<span class='amb'>"+fR(totMRR)+"</span>","Regra1 renov+anuaisD30 | Regra2 s/trial | Regra3 conv","k-am")+
+      kcard("renov","Mensal (1x) "+recLabel,"<span style='color:#854f0b'>"+fR(nMenLabel)+"</span>","Vendas mensais no período","k-grn")+
+      kcard("churn","Anual D+30 "+recLabel,"<span style='color:#3266ad'>"+fR(nAnuLabel)+"</span>","1º pagamento anual no período","k-bl");
+    var fluxoRows=Object.entries(FIN.fluxo_explicado||{}).map(function(e){
+      return "<div style='padding:10px;background:#f8f8f6;border-radius:8px;border-left:3px solid #3266ad'>"
+        +"<div style='font-size:11px;font-weight:700;text-transform:capitalize;margin-bottom:4px'>"+e[0]+"</div>"
+        +"<div style='font-size:11px;color:#888;line-height:1.4'>"+e[1]+"</div></div>";
+    }).join("");
+    var caixaRows=(isAll?allM2:[curM]).map(function(m){
+      var b=cpm[m]||{}; var isCur=m===curM;
+      return "<tr style='"+(isCur?"background:#f0f6ff;font-weight:600":"")+"'><td><b>"+(ML[m]||m)+"</b></td>"
+        +"<td style='color:#888'>"+(b.rec_pix_d0>0?fF(b.rec_pix_d0):"-")+"</td>"
+        +"<td>"+(b.rec_cartao_d30>0?fF(b.rec_cartao_d30):"-")+"</td>"
+        +"<td><span class='blu'>"+(b.rec_mrr>0?fF(b.rec_mrr):"-")+"</span></td>"
+        +"<td><span class='grn'>"+(b.rec_novas_men>0?fF(b.rec_novas_men):"-")+"</span></td>"
+        +"<td>"+(b.rec_novas_anu>0?fF(b.rec_novas_anu):"-")+"</td>"
+        +"<td><b>"+fF(b.rec_total||0)+"</b></td></tr>";
+    }).join("");
+    mc.innerHTML=
+      "<div class='card'><div class='ct'>Fluxo de caixa - como funciona</div>"
+      +"<div style='display:grid;grid-template-columns:repeat(4,1fr);gap:8px'>"+fluxoRows+"</div></div>"
+      +"<div class='three'>"
+      +"<div class='card' style='border-color:#3266ad'><div class='ct'>MRR recorrente</div>"
+      +"<div style='font-size:26px;font-weight:700;color:#1255a4'>"+fF(FIN.mrr_base)+"</div>"
+      +"<div style='font-size:11px;color:#888;margin-top:4px'>"+num(MRR_BK.subs_mensal)+" mensais todo mes</div>"
+      +"<div style='font-size:11px;color:#1255a4;margin-top:4px;font-weight:600'>ARR: "+fF(FIN.arr_real)+"/ano</div></div>"
+      +"<div class='card' style='border-color:#854f0b'><div class='ct'>Projecao Junho</div>"
+      +"<div style='font-size:26px;font-weight:700;color:#854f0b'>~"+fF(pjun.total_projetado||0)+"</div>"
+      +"<div class='statrow'><span class='statk'>Confirmado</span><span class='statv grn'>"+fF(pjun.confirmado||0)+"</span></div>"
+      +"<div class='statrow'><span class='statk'>MRR recorrente</span><span class='statv blu'>"+fF(pjun.mrr_recorrente||0)+"</span></div>"
+      +"<div style='font-size:10px;color:#D85A30;margin-top:6px'>Trials convertem jun - caixa em jul (D+30)</div></div>"
+      +"<div class='card' style='border-color:#1a6b38'><div class='ct'>Projecao Julho</div>"
+      +"<div style='font-size:26px;font-weight:700;color:#1a6b38'>~"+fF(pjul.total_projetado||0)+"</div>"
+      +"<div class='statrow'><span class='statk'>MRR recorrente</span><span class='statv blu'>"+fF(pjul.mrr_recorrente||0)+"</span></div>"
+      +"<div class='statrow'><span class='statk'>Cartao D+30 jun</span><span class='statv'>"+fF(pjul.cartao_d30_junho||0)+"</span></div>"
+      +"<div class='statrow'><span class='statk'>Trials mai convertidos</span><span class='statv grn'>~"+fF((pjul.trials_mai_convertidos||{}).total_rec||0)+"</span></div></div>"
+      +"</div>"
+      +"<div class='card'><div class='ct'>Historico caixa real por mes</div>"
+      +"<table class='tbl'><thead><tr><th>Mes</th><th>Pix D0</th><th>Cartao D30</th><th>MRR renov</th><th>Novas men</th><th>Novas anu</th><th>TOTAL</th></tr></thead><tbody>"+caixaRows+"</tbody></table></div>";
+    return;
+  }
+
+  if(curO==="conversao"){
+    var cd=CONV_DATA||{};
+    var pp=cd.por_produto||[];
+    var pm=cd.por_mes||[];
+    var res=cd.resumo||{};
+    var meses_label={"2026-02":"Fev/26","2026-03":"Mar/26","2026-04":"Abr/26","2026-05":"Mai/26","2026-06":"Jun/26"};
+
+    // KPI cards
+    document.getElementById("kpi-grid").innerHTML=
+      kcard("ativas","Entraram em Trial",num(res.total_entraram_trial||0),"todos os produtos","k-bl")+
+      kcard("subs","Converteram",num(res.total_converteram||0),"ficaram ativos","k-grn")+
+      kcard("trials","Conv. Rate Global","<span class='grn'>"+(res.conv_rate_global||0)+"%</span>","convertidos / (conv+trial)","k-grn")+
+      kcard("renov","Ainda em Trial",num(res.total_ainda_trial||0),"aguardando conversão","k-am")+
+      kcard("churn","Churn Real",num(churn_total_js),"cobr≥2 — pagou 2ª parcela e cancelou","k-re")+
+      kcard("arr","Taxa Churn",churn_rate_js+"%","churn real / (churn + ativas)","k-re");
+
+    var _sub2=document.getElementById("ctx-sub"); if(_sub2) _sub2.innerHTML="<b>Funil de Conversão:</b> "+num(res.total_entraram_trial)+" entraram em trial → "+num(res.total_converteram)+" converteram ("+res.conv_rate_global+"%) → "+num(res.total_ainda_trial)+" ainda em trial. Churn real (cobr≥2): "+num(churn_total_js)+" ("+churn_rate_js+"%).";
+
+    // ── TABELA MÊS A MÊS ──
+    var mesAtual=isAll?null:curM;
+    var pmFiltrado=isAll?pm:pm.filter(function(x){return x.mes===mesAtual;});
+    if(!isAll&&pmFiltrado.length===0) pmFiltrado=pm;
+
+    var mesRows="";
+    pm.forEach(function(mes){
+      var isCur=mes.mes===curM;
+      var totalT=mes.total_trial_ativo||0; var totalC=mes.total_converteu||0;
+      var totalE=totalT+totalC;
+      var taxa=totalE>0?Math.round(totalC/totalE*100):0;
+      mesRows+="<tr style='"+(isCur?"background:#f0f6ff;font-weight:700":"")+"'>"
+        +"<td><b>"+(meses_label[mes.mes]||mes.mes)+"</b></td>"
+        +"<td>"+num(totalE)+"</td>"
+        +"<td><span class='grn'>"+num(totalC)+"</span></td>"
+        +"<td>"+num(totalT)+"</td>"
+        +"<td><b style='"+(taxa>=50?"color:#1a6b38":taxa>=20?"color:#854f0b":"color:#a32d2d")+"'>"+taxa+"%</b></td>"
+        +"</tr>";
+    });
+
+    // ── FUNIL POR PRODUTO ──
+    var prodRows="";
+    var ppFilt=isAll?pp:pp.filter(function(r){
+      var pmM=pm.find(function(x){return x.mes===curM;});
+      if(!pmM) return true;
+      return pmM.por_produto.some(function(x){return x.produto===r.produto&&x.plano===r.plano;});
+    });
+    ppFilt.sort(function(a,b){return (b.conv||0)-(a.conv||0);});
+    ppFilt.forEach(function(r){
+      var taxa=r.conv_rate||0;
+      var cor=taxa>=70?"color:#1a6b38":taxa>=40?"color:#854f0b":taxa>=10?"color:#c47a00":"color:#a32d2d";
+      var totalE=(r.total||0); var conv=(r.conv||r.ativa||0); var trial=(r.trial||0);
+      var fonte=r.fonte==="arquivo_protagon"?"<small style='color:#3266ad'>●Protagon</small>":"";
+      prodRows+="<tr>"
+        +"<td><b>"+r.produto+"</b>"+fonte+"</td>"
+        +"<td>"+r.plano+"</td>"
+        +"<td>"+num(totalE)+"</td>"
+        +"<td><span class='grn'>"+num(conv)+"</span></td>"
+        +"<td>"+num(trial)+"</td>"
+        +(r.atrasada>0?"<td><span style='color:#c47a00'>"+num(r.atrasada)+"</span></td>":"<td>-</td>")
+        +(r.nunca_pagou>0?"<td style='color:#a32d2d'>"+num(r.nunca_pagou)+"</td>":"<td>-</td>")
+        +"<td><b style='"+cor+"'>"+taxa+"%</b></td>"
+        +"</tr>";
+    });
+
+    // ── DETALHE MÊS SELECIONADO ──
+    var detalheRows="";
+    var pmSel=isAll?null:pm.find(function(x){return x.mes===curM;});
+    if(pmSel){
+      pmSel.por_produto.forEach(function(r){
+        var taxa=r.conv_rate||0; var cor=taxa>=50?"color:#1a6b38":taxa>=20?"color:#854f0b":"color:#a32d2d";
+        detalheRows+="<tr><td><b>"+r.produto+"</b></td><td>"+r.plano+"</td>"
+          +"<td>"+num(r.total_cohort||0)+"</td>"
+          +"<td><span class='grn'>"+num(r.converteu||0)+"</span></td>"
+          +"<td>"+num(r.trial_ativo||0)+"</td>"
+          +"<td><b style='"+cor+"'>"+taxa+"%</b></td></tr>";
+      });
+    }
+
+    mc.innerHTML=
+      "<div class='card'><div class='ct'>Conversão de Trial → Ativo — Mês a Mês</div>"
+      +"<table class='tbl'><thead><tr><th>Mês</th><th>Entraram Trial</th><th>Converteram</th><th>Ainda Trial</th><th>Taxa</th></tr></thead>"
+      +"<tbody>"+mesRows+"</tbody></table></div>"
+
+      +(!isAll&&detalheRows?"<div class='card'><div class='ct'>Detalhe por Produto — "+(meses_label[curM]||curM)+"</div>"
+      +"<table class='tbl'><thead><tr><th>Produto</th><th>Plano</th><th>Entraram</th><th>Converteram</th><th>Trial</th><th>Taxa</th></tr></thead>"
+      +"<tbody>"+detalheRows+"</tbody></table></div>":"")
+
+      +"<div class='card'><div class='ct'>Funil por Produto — Consolidado</div>"
+      +"<table class='tbl'><thead><tr><th>Produto</th><th>Plano</th><th>Total Entrou</th><th>Converteu</th><th>Trial</th><th>Atrasada</th><th>Nunca Pagou</th><th>Taxa Conv.</th></tr></thead>"
+      +"<tbody>"+prodRows+"</tbody>"
+      +"<tfoot><tr><td colspan='2'><b>TOTAL</b></td><td><b>"+num(res.total_entraram_trial)+"</b></td><td><b>"+num(res.total_converteram)+"</b></td><td><b>"+num(res.total_ainda_trial)+"</b></td><td></td><td></td><td><b style='color:#1a6b38'>"+res.conv_rate_global+"%</b></td></tr></tfoot>"
+      +"</table></div>";
+    return;
+  }
+  if(curO==="canais"){
+    var ud=isAll?UTM_DATA.global:(UTM_DATA.by_month[curM]||{por_canal:[],por_grupo:[],total:0,sem_utm:0,pct_utm:0});
+    var grupos=ud.por_grupo||[];
+    var canais=ud.por_canal||[];
+    var totU=isAll?grupos.reduce(function(a,r){return a+(r.vendas||0);},0):(ud.total||0);
+    var semU=isAll?(grupos.find(function(r){return r.canal_grupo==="Sem UTM";})||{}).vendas||0:(ud.sem_utm||0);
+    var pctU=totU>0?Math.round((totU-semU)/totU*100):0;
+    var maxVU=Math.max.apply(null,grupos.map(function(r){return r.vendas||0;}).concat([1]));
+    var CORES={"Meta Ads Wendell":"#1255a4","Meta Ads":"#3266ad","Organico":"#1a6b38",
+      "Instagram":"#D85A30","ChatGPT":"#854f0b","Google":"#E24B4A",
+      "Comercial":"#7B5EA7","Grupo WhatsApp":"#5EA7A7","Sem UTM":"#ccc"};
+    function getCor(c){return CORES[c]||"#888";}
+    document.getElementById("kpi-grid").innerHTML=
+      kcard("ativas","Total vendas","<span class='grn'>"+num(totU)+"</span>","no periodo","k-grn")+
+      kcard("trials","Com UTM","<span class='blu'>"+num(totU-semU)+"</span>",pctU+"% rastreado","k-bl")+
+      kcard("mrr","Sem UTM","<span style='color:#888'>"+num(semU)+"</span>",(100-pctU)+"% nao rastr.","")+
+      kcard("arr","Meta Ads","<span class='blu'>"+num((grupos.find(function(r){return r.canal_grupo==="Meta Ads";})||{}).vendas||0)+"</span>",fF((grupos.find(function(r){return r.canal_grupo==="Meta Ads";})||{}).receita||0),"k-bl")+
+      kcard("renov","Organico","<span class='grn'>"+num((grupos.find(function(r){return r.canal_grupo==="Organico";})||{}).vendas||0)+"</span>",fF((grupos.find(function(r){return r.canal_grupo==="Organico";})||{}).receita||0),"k-grn")+
+      kcard("churn","Comercial",num((grupos.find(function(r){return r.canal_grupo==="Comercial";})||{}).vendas||0),fF((grupos.find(function(r){return r.canal_grupo==="Comercial";})||{}).receita||0),"");
+    var barHtml=grupos.map(function(r){
+      var pct2=totU>0?Math.round((r.vendas||0)/totU*100):0;
+      var isSem=r.canal_grupo==="Sem UTM";
+      return "<div style='margin-bottom:10px'>"
+        +"<div style='display:flex;justify-content:space-between;margin-bottom:3px'>"
+        +"<span style='font-size:12px;font-weight:"+(isSem?"400":"700")+";color:"+(isSem?"#aaa":"#1a1a18")+"'>"+r.canal_grupo+"</span>"
+        +"<span style='font-size:12px;font-weight:700'>"+num(r.vendas||0)+"<span style='color:#888;font-weight:400'> ("+pct2+"%)</span></span>"
+        +"</div>"
+        +"<div class='bbg' style='height:8px'><div class='bbf' style='height:8px;width:"+Math.round((r.vendas||0)/maxVU*100)+"%;background:"+getCor(r.canal_grupo)+"'></div></div>"
+        +"<div style='font-size:10px;color:#888;margin-top:2px'>"+fF(r.receita||0)+"</div>"
+        +"</div>";
+    }).join("");
+    var detRows=canais.map(function(r,i){
+      var isSem=(r.canal||"")==="Sem UTM";
+      return "<tr style='"+(isSem?"color:#aaa":"")+"'><td class='rnk'>"+(i+1)+"</td>"
+        +"<td><b>"+(r.canal||"-")+"</b></td>"
+        +"<td style='font-size:10px;color:#888'>"+(r.canal_grupo||"-")+"</td>"
+        +"<td><b>"+num(r.vendas||0)+"</b></td>"
+        +"<td>"+(totU>0?Math.round((r.vendas||0)/totU*100):0)+"%</td>"
+        +"<td>"+fF(r.receita||0)+"</td></tr>";
+    }).join("");
+    var evoRows=months.map(function(m){
+      var bm=UTM_DATA.by_month[m]||{por_canal:[],total:0,sem_utm:0};
+      var pc=bm.por_canal||[];
+      function cv(c){var r=pc.find(function(r){return r.canal===c;}); return r?{v:r.vendas||0,r:r.receita||0}:{v:0,r:0};}
+      function col(o){return o.v?"<b>"+o.v+"</b><br><small style='color:#888'>"+fR(o.r)+"</small>":"-";}
+      var tot2=bm.total||0; var isCur=m===curM;
+      var prot=cv("Protagon"),work=cv("Workshop"),alun=cv("Alunos"),spr=cv("Sprint Digital"),lib5=cv("5 Liberdades"),gaiaone=cv("Gaia One");
+      var comUtm=tot2-(gaiaone.v+cv("Sem UTM").v);
+      return "<tr style='"+(isCur?"background:#f0f6ff;font-weight:600":"")+"'>"
+        +"<td><b>"+(ML[m]||m)+"</b></td><td>"+tot2+"</td>"
+        +"<td style='color:#3266ad'>"+col(prot)+"</td>"
+        +"<td style='color:#1a6b38'>"+col(work)+"</td>"
+        +"<td style='color:#854f0b'>"+col(alun)+"</td>"
+        +"<td>"+col(spr)+"</td><td>"+col(lib5)+"</td>"
+        +"<td style='color:#555'>"+col(gaiaone)+"</td>"
+        +"<td>"+(tot2>0?Math.round(comUtm/tot2*100):0)+"%</td></tr>";
+    }).join("");
+    mc.innerHTML=
+      "<div class='info "+(pctU>=50?"ibl":"iamb")+"'><b>Cobertura UTM:</b> "+num(totU-semU)+" de "+num(totU)+" vendas rastreadas ("+pctU+"%). "+num(semU)+" sem UTM.</div>"
+      +"<div class='two'>"
+      +"<div class='card'><div class='ct'>Vendas por grupo de canal</div>"+barHtml+"</div>"
+      +"<div class='card'><div class='ct'>Detalhe por UTM source</div>"
+      +"<table class='tbl'><thead><tr><th>#</th><th>Canal</th><th>Grupo</th><th>Vendas</th><th>%</th><th>Receita</th></tr></thead><tbody>"+detRows+"</tbody></table></div>"
+      +"</div>"
+      +"<div class='card'><div class='ct'>Evolucao por canal mes a mes</div>"
+      +"<table class='tbl' style='font-size:11px'><thead><tr>"
+      +"<th>Mês</th><th>Total</th><th style='color:#3266ad'>Protagon</th><th style='color:green'>Workshop</th><th style='color:#854f0b'>Alunos</th><th>Sprint</th><th>5 Lib.</th><th>Gaia One</th><th>% Rastr.</th>"
+      +"</tr></thead><tbody>"+evoRows+"</tbody></table></div>";
+    return;
+  }
+}
+
+
+
+</script>
+</body>
+</html>
