@@ -507,6 +507,36 @@ function processData(rawSubs) {
 
   const UTM_DATA_obj = { global: utm_global, by_month: utm_by_month };
 
+
+  // ── COHORT: trials por mês de entrada + conversão final ──
+  var cohort_by_month = {};
+  MONTHS.forEach(function(m) {
+    var cohort = subs.filter(function(r){ return r.mesTrial === m; });
+    var conv   = cohort.filter(function(r){ return r.last_status === "active"; });
+    var still  = cohort.filter(function(r){ return r.last_status === "trial"; });
+    var notC   = cohort.filter(function(r){ return ["canceled","inactive","overdue"].includes(r.last_status); });
+    // Por produto
+    var byProd = {};
+    cohort.forEach(function(r) {
+      var k = r.produto + "||" + r.plano;
+      if (!byProd[k]) byProd[k] = {produto:r.produto,plano:r.plano,total:0,conv:0,trial:0,nao_conv:0};
+      byProd[k].total++;
+      if (r.last_status==="active")                                     byProd[k].conv++;
+      else if (r.last_status==="trial")                                  byProd[k].trial++;
+      else                                                               byProd[k].nao_conv++;
+    });
+    var byProdList = Object.values(byProd).sort(function(a,b){return b.total-a.total;}).map(function(v){
+      return Object.assign(v, {conv_rate: v.total>0 ? Math.round(v.conv/v.total*1000)/10 : 0});
+    });
+    cohort_by_month[m] = {
+      mes: m, total: cohort.length,
+      converteram: conv.length, ainda_trial: still.length, nao_converteram: notC.length,
+      conv_rate: cohort.length>0 ? Math.round(conv.length/cohort.length*1000)/10 : 0,
+      por_produto: byProdList
+    };
+  });
+  D_obj.cohort_by_month = cohort_by_month;
+
   return {
     D: D_obj, MRR_BK: MRR_BK_obj, FIN: FIN_obj,
     CONV_DATA: CONV_DATA_obj, UTM_DATA: UTM_DATA_obj,
@@ -1029,39 +1059,112 @@ function buildMain(d){
   }
 
   if(curO==="trials"){
-    var tmd2=D.trials_mai_detail||{};
-    var tp2=D.drill.trial_por_produto||[];
-    var pns2=tmd2.protagon_nao_status||[];
-    var pnsText2=pns2.map(function(r){return r.count+" "+r.status;}).join(" - ");
-    var convRate=tmd2.protagon_total>0?Math.round((tmd2.protagon_conv||0)/(tmd2.protagon_total)*100):0;
-    var ppRows=(tmd2.por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b>"+r.trials+"</b></td></tr>";}).join("");
-    var convRows=(tmd2.conv_por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b class='grn'>"+r.conv+"</b></td></tr>";}).join("");
-    var tp2Rows=tp2.map(function(r,i){
-      var cls2=r.conv_rate>=30?"b-gr":r.conv_rate>=15?"b-am":"b-re";
-      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
-        +"<td><b>"+r.trials+"</b></td><td><span class='bd "+cls2+"'>"+r.conv_rate+"%</span></td></tr>";
+    var cohortMap = D.cohort_by_month || {};
+    var allTrialMonths = MONTHS.filter(function(m){ return (cohortMap[m]||{}).total > 0; });
+    var tp2 = D.drill.trial_por_produto || [];
+
+    // KPI grid já foi feito pelo buildKpiGrid — contexto
+    var ctxEl = document.getElementById("ctx-sub");
+    if(ctxEl) {
+      if(isAll) ctxEl.innerHTML = "Cohort de conversão: trials por mês de entrada → quantos viraram assinante";
+      else {
+        var ch = cohortMap[curM]||{};
+        ctxEl.innerHTML = "<b>"+num(ch.total||0)+" trials entraram em "+(ML[curM]||curM)+"</b> → "
+          +"<b style='color:#4ade80'>"+num(ch.converteram||0)+" converteram ("+(ch.conv_rate||0)+"%)</b>"
+          +" | "+(ch.ainda_trial||0)+" ainda em trial | "+(ch.nao_converteram||0)+" não converteram";
+      }
+    }
+
+    // ── TABELA COHORT MÊS A MÊS ──
+    var cohortRows = MONTHS.map(function(m) {
+      var c = cohortMap[m] || {total:0,converteram:0,ainda_trial:0,nao_converteram:0,conv_rate:0};
+      var isCur = m === curM;
+      var cor = c.conv_rate>=50?"color:#4ade80":c.conv_rate>=25?"color:#f59e0b":"color:#f87171";
+      return "<tr style='"+(isCur?"background:#1e2a40;font-weight:700":"")+"'>"
+        +"<td><b>"+(ML[m]||m)+"</b></td>"
+        +"<td><b>"+num(c.total)+"</b></td>"
+        +"<td><span style='"+cor+"font-weight:700'>"+num(c.converteram)+"</span></td>"
+        +"<td style='color:#94a3b8'>"+num(c.ainda_trial)+"</td>"
+        +"<td style='color:#f87171'>"+num(c.nao_converteram)+"</td>"
+        +"<td><b style='"+cor+"'>"+c.conv_rate+"%</b></td>"
+        +"</tr>";
     }).join("");
-    var junRows=(tmd2.trials_jun_por_produto||[]).map(function(r){return "<tr><td>"+r.produto+"</td><td>"+plB(r.plano)+"</td><td><b>"+r.trials+"</b></td></tr>";}).join("");
-    mc.innerHTML=
-      "<div class='card' style='border-color:#D85A30'><div class='ct'>Protagon - Trials Maio -> Junho</div>"
-      +"<div class='info iamb'><b>"+num(tmd2.total||0)+" trials abertos em maio vencem em junho.</b> Quem converte = receita em junho. Caixa D+30 = julho.</div>"
-      +"<div class='three' style='margin-bottom:12px'>"
-      +"<div style='text-align:center;padding:12px;background:#fff8f0;border-radius:8px;border:1px solid #f5d980'><div style='font-size:10px;font-weight:700;color:#854f0b'>TOTAL ABERTOS</div><div style='font-size:28px;font-weight:700;color:#854f0b'>"+num(tmd2.total||0)+"</div></div>"
-      +"<div style='text-align:center;padding:12px;background:#f0faf4;border-radius:8px;border:1px solid #a8ddb5'><div style='font-size:10px;font-weight:700;color:#1a6b38'>CONVERTERAM</div><div style='font-size:28px;font-weight:700;color:#1a6b38'>"+num(tmd2.protagon_conv||0)+"</div><div style='font-size:10px;color:#a0aec0'>"+convRate+"% conv rate</div></div>"
-      +"<div style='text-align:center;padding:12px;background:#fde8e8;border-radius:8px;border:1px solid #f5c0c0'><div style='font-size:10px;font-weight:700;color:#a32d2d'>NAO CONVERTERAM</div><div style='font-size:28px;font-weight:700;color:#a32d2d'>"+num(tmd2.protagon_nao_conv||0)+"</div><div style='font-size:10px;color:#a0aec0'>"+pnsText2+"</div></div>"
-      +"</div>"
-      +"<div class='two'>"
-      +"<div><div class='ct'>Trials de maio por produto</div><table class='tbl'><thead><tr><th scope='col'>Produto</th><th scope='col'>Plano</th><th scope='col'>Trials</th></tr></thead><tbody>"+ppRows+"</tbody></table></div>"
-      +"<div><div class='ct'>Convertidos por produto</div><table class='tbl'><thead><tr><th scope='col'>Produto</th><th scope='col'>Plano</th><th scope='col'>Conv</th></tr></thead><tbody>"+convRows+"</tbody></table></div>"
-      +"</div></div>"
-      +"<div class='card'><div class='ct'>Trials ativos agora ("+num(D.active_now.trials_total)+")</div>"
-      +"<table class='tbl'><thead><tr><th scope='col'>#</th><th scope='col'>Produto</th><th scope='col'>Plano</th><th scope='col'>Trials</th><th scope='col'>Conv%</th></tr></thead><tbody>"+tp2Rows+"</tbody></table></div>"
-      +"<div class='card'><div class='ct'>Trials junho - "+num(tmd2.trials_jun_total||0)+" abertos</div>"
-      +"<table class='tbl'><thead><tr><th scope='col'>Produto</th><th scope='col'>Plano</th><th scope='col'>Trials</th></tr></thead><tbody>"+junRows+"</tbody></table></div>";
+
+    // ── DETALHE DO MÊS SELECIONADO ──
+    var detalheHTML = "";
+    if(!isAll) {
+      var ch = cohortMap[curM] || {total:0,converteram:0,ainda_trial:0,nao_converteram:0,conv_rate:0,por_produto:[]};
+      var prodRows = (ch.por_produto||[]).map(function(r) {
+        var cor = r.conv_rate>=50?"color:#4ade80":r.conv_rate>=25?"color:#f59e0b":"color:#f87171";
+        var pct = ch.total > 0 ? Math.round(r.total/ch.total*100) : 0;
+        return "<tr>"
+          +"<td><b>"+r.produto+"</b></td>"
+          +"<td>"+plB(r.plano)+"</td>"
+          +"<td><b>"+num(r.total)+"</b> <small style='color:#94a3b8'>("+pct+"%)</small></td>"
+          +"<td><b style='"+cor+"'>"+num(r.conv)+"</b></td>"
+          +"<td style='color:#94a3b8'>"+num(r.trial)+"</td>"
+          +"<td style='color:#f87171'>"+num(r.nao_conv)+"</td>"
+          +"<td><b style='"+cor+"'>"+r.conv_rate+"%</b></td>"
+          +"</tr>";
+      }).join("");
+
+      detalheHTML = "<div class='card' style='border-left:3px solid #3266ad'>"
+        +"<div class='ct'>Cohort "+(ML[curM]||curM)+" — Detalhamento por produto</div>"
+        +"<div class='three' style='margin-bottom:16px'>"
+        +"<div style='text-align:center;padding:14px;background:#1a2236;border-radius:8px'>"
+          +"<div style='font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase'>Entraram em Trial</div>"
+          +"<div style='font-size:32px;font-weight:700;color:#e2e8f0;margin:4px 0'>"+num(ch.total)+"</div>"
+          +"<div style='font-size:11px;color:#94a3b8'>cohort de "+(ML[curM]||curM)+"</div>"
+        +"</div>"
+        +"<div style='text-align:center;padding:14px;background:#0f2d1e;border-radius:8px;border:1px solid #1a6b38'>"
+          +"<div style='font-size:10px;font-weight:700;color:#4ade80;text-transform:uppercase'>Converteram</div>"
+          +"<div style='font-size:32px;font-weight:700;color:#4ade80;margin:4px 0'>"+num(ch.converteram)+"</div>"
+          +"<div style='font-size:11px;color:#94a3b8'>"+ch.conv_rate+"% de conversão</div>"
+        +"</div>"
+        +"<div style='text-align:center;padding:14px;background:#1a2236;border-radius:8px'>"
+          +"<div style='font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase'>Não Converteram</div>"
+          +"<div style='font-size:32px;font-weight:700;color:#f87171;margin:4px 0'>"+num(ch.nao_converteram+ch.ainda_trial)+"</div>"
+          +"<div style='font-size:11px;color:#94a3b8'>"+num(ch.ainda_trial)+" ainda em trial</div>"
+        +"</div>"
+        +"</div>"
+        +(prodRows ? "<table class='tbl'><thead><tr>"
+          +"<th scope='col'>Produto</th><th scope='col'>Plano</th>"
+          +"<th scope='col'>Total Entraram</th><th scope='col'>Converteram</th>"
+          +"<th scope='col'>Ainda Trial</th><th scope='col'>Não Conv.</th>"
+          +"<th scope='col'>Taxa</th></tr></thead><tbody>"+prodRows+"</tbody>"
+          +"<tfoot><tr><td colspan='2'><b>TOTAL</b></td><td><b>"+num(ch.total)+"</b></td>"
+          +"<td><b style='color:#4ade80'>"+num(ch.converteram)+"</b></td>"
+          +"<td>"+num(ch.ainda_trial)+"</td><td style='color:#f87171'>"+num(ch.nao_converteram)+"</td>"
+          +"<td><b>"+ch.conv_rate+"%</b></td></tr></tfoot></table>"
+        : emptyState("Nenhum trial entrou neste mês"))
+        +"</div>";
+    }
+
+    // ── TABELA TRIALS ATIVOS AGORA ──
+    var tp2Rows = tp2.map(function(r,i) {
+      var cls2 = r.conv_rate>=30?"b-gr":r.conv_rate>=15?"b-am":"b-re";
+      return "<tr><td class='rnk'>"+(i+1)+"</td><td><b>"+r.produto+"</b></td><td>"+plB(r.plano)+"</td>"
+        +"<td><b>"+num(r.trials)+"</b></td>"
+        +"<td><span class='bd "+cls2+"'>"+r.conv_rate+"%</span></td></tr>";
+    }).join("");
+
+    mc.innerHTML = detalheHTML
+
+      +"<div class='card'><div class='ct'>Cohort por Mês — Conversão Trial → Assinante</div>"
+      +"<div class='info iamb' style='margin-bottom:12px'>Cada linha = trials que <b>ENTRARAM</b> naquele mês. Conversão é cumulativa (independente de quando converteram).</div>"
+      +"<table class='tbl'><thead><tr>"
+      +"<th scope='col'>Mês</th><th scope='col'>Entraram Trial</th><th scope='col'>Converteram</th>"
+      +"<th scope='col'>Ainda Trial</th><th scope='col'>Não Conv.</th><th scope='col'>Taxa Conv.</th>"
+      +"</tr></thead><tbody>"+cohortRows+"</tbody></table></div>"
+
+      +"<div class='card'><div class='ct'>Trials Ativos Agora — "+num(D.active_now.trials_total)+" abertos</div>"
+      +"<table class='tbl'><thead><tr>"
+      +"<th scope='col'>#</th><th scope='col'>Produto</th><th scope='col'>Plano</th>"
+      +"<th scope='col'>Trials</th><th scope='col'>Conv%</th>"
+      +"</tr></thead><tbody>"+tp2Rows+"</tbody></table></div>";
     return;
   }
-
-  if(curO==="churn"){
+if(curO==="churn"){
     var cp2=D.churn_detail_global||[];
     var maxCh2=Math.max.apply(null,cp2.map(function(r){return r.churn||0;}).concat([1]));
     var chRows=cp2.map(function(r,i){
